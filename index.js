@@ -1,4 +1,13 @@
-// Add an address to a notificatio in Alchemy
+const express = require('express')
+const path = require('path')
+const PORT = process.env.PORT || 5000
+
+var app = express()
+  .use(express.static(path.join(__dirname, 'public')))
+  .use(express.json())
+  .post('/alchemyhook', (req, res) => { notificationReceived(req); res.status(200).end() })
+  .get('/*', (req, res) => res.sendFile('/index.html'))
+  .listen(PORT, () => console.log(`Listening on ${PORT}`))
 
 async function addAddress(new_address) {
   console.log("adding address " + new_address);

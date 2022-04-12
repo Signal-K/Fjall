@@ -1,40 +1,24 @@
 {
-  "name": "js-getting-started",
-  "version": "0.3.0",
-  "description": "A sample Node.js app using Express 4",
-  "engines": {
-    "node": "14.x"
-  },
-  "main": "index.js",
+  "name": "auth",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "start": "node index.js",
-    "test": "node test.js"
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
-    "@chakra-ui/react": "^1.8.6",
-    "ejs": "^3.1.5",
-    "express": "^4.15.2",
-    "react-moralis": "^1.3.4",
-    "socket.io": "^4.4.1",
-    "web3": "^1.7.1"
+    "@3rdweb/hooks": "^1.9.2",
+    "@thirdweb-dev/react": "^2.0.4",
+    "@thirdweb-dev/sdk": "^2.0.30",
+    "ethers": "^5.6.3",
+    "next": "12.1.5",
+    "react": "18.0.0",
+    "react-dom": "18.0.0"
   },
   "devDependencies": {
-    "got": "^11.3.0",
-    "tape": "^4.7.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/heroku/node-js-getting-started.git"
-  },
-  "keywords": [
-    "node",
-    "heroku",
-    "express"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/heroku/node-js-getting-started/issues"
-  },
-  "homepage": "https://github.com/heroku/node-js-getting-started#readme",
-  "author": ""
+    "eslint": "8.13.0",
+    "eslint-config-next": "12.1.5"
+  }
 }

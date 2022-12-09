@@ -2960,7 +2960,7 @@ base-64@^1.0.0:
   resolved "https://registry.yarnpkg.com/base-64/-/base-64-1.0.0.tgz#09d0f2084e32a3fd08c2475b973788eee6ae8f4a"
   integrity sha512-kwDPIFCGx0NZHog36dj+tHiwP4QMzsZ3AgMViUBKI0+V5n4U0ufTCUMhnQ04diaRI8EX/QcPfql7zlhZ7j4zgg==
 
-base64-js@^1.2.3, base64-js@^1.3.1, base64-js@^1.5.1:
+base64-js@^1.2.3, base64-js@^1.3.0, base64-js@^1.3.1, base64-js@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.5.1.tgz#1b1b440160a5bf7ad40b650f095963481903930a"
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
@@ -3983,6 +3983,11 @@ exec-async@^2.2.0:
   resolved "https://registry.yarnpkg.com/exec-async/-/exec-async-2.2.0.tgz#c7c5ad2eef3478d38390c6dd3acfe8af0efc8301"
   integrity sha512-87OpwcEiMia/DeiKFzaQNBNFeN3XkkpYIh9FyOqq5mS2oKv3CBE67PXoEKcr6nodWdXNogTiQ0jE2NGuoffXPw==
 
+expo-application@~7.0.6:
+  version "7.0.6"
+  resolved "https://registry.yarnpkg.com/expo-application/-/expo-application-7.0.6.tgz#ca386011b5270a8dc4497fd0dec7c88c6faea2a8"
+  integrity sha512-OrRQ1vDi1v+nF0bfGe0nWU/cZVN0EFysJ7Sj5ko8GuL8t6GidqhN3j7hw16hINZuWcEEfa0wAUXmNT1LMgLWog==
+
 expo-asset@~12.0.8:
   version "12.0.8"
   resolved "https://registry.yarnpkg.com/expo-asset/-/expo-asset-12.0.8.tgz#cdc4c6e2f034362ff5f3d0f056c70359abe09ff2"
@@ -3991,6 +3996,18 @@ expo-asset@~12.0.8:
     "@expo/image-utils" "^0.8.7"
     expo-constants "~18.0.8"
 
+expo-auth-session@^7.0.7:
+  version "7.0.7"
+  resolved "https://registry.yarnpkg.com/expo-auth-session/-/expo-auth-session-7.0.7.tgz#3107aededdddbb3688e6adaf1993d238f51a5002"
+  integrity sha512-wrk9F0kfbGQ25FMwNcFq86NgOZBbbvjcq1FboZI/sNv1Rw6qJTJE7B3547wjOPhA9/iUdmIPxLVwsC0xSFTx8A==
+  dependencies:
+    expo-application "~7.0.6"
+    expo-constants "~18.0.7"
+    expo-crypto "~15.0.6"
+    expo-linking "~8.0.7"
+    expo-web-browser "~15.0.6"
+    invariant "^2.2.4"
+
 expo-constants@~18.0.7, expo-constants@~18.0.8:
   version "18.0.8"
   resolved "https://registry.yarnpkg.com/expo-constants/-/expo-constants-18.0.8.tgz#14f8388136de6e83d651bd68b326a675dfb7051c"
@@ -3998,6 +4015,13 @@ expo-constants@~18.0.7, expo-constants@~18.0.8:
   dependencies:
     "@expo/config" "~12.0.8"
     "@expo/env" "~2.0.7"
+
+expo-crypto@~15.0.6:
+  version "15.0.6"
+  resolved "https://registry.yarnpkg.com/expo-crypto/-/expo-crypto-15.0.6.tgz#40ce38b69df35711cf75566c73d91d73045b7a39"
+  integrity sha512-8hU3rIzjIgmSfT/9KHgmJOaX/1j5gBNwlp67HiyJmxPhyibtW/r/JntQq0U48BfC5GqZEkRRelP114ElUFyOsA==
+  dependencies:
+    base64-js "^1.3.0"
 
 expo-file-system@~19.0.11:
   version "19.0.11"
@@ -4081,6 +4105,11 @@ expo-router@~6.0.0:
     shallowequal "^1.1.0"
     use-latest-callback "^0.2.1"
     vaul "^1.1.2"
+
+expo-secure-store@^15.0.6:
+  version "15.0.6"
+  resolved "https://registry.yarnpkg.com/expo-secure-store/-/expo-secure-store-15.0.6.tgz#18f9c7249a1671b15183643ee9b44969ce1a00ce"
+  integrity sha512-jzCsjnoMJYuRFxb4oHlwQY71WFIiOFiqQlvtay3Ct6OoKugR3/qjBwkcBoDsr1LsbFBVEkOMEU2i59peBMG1Jg==
 
 expo-splash-screen@~31.0.8:
   version "31.0.8"

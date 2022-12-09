@@ -1,10 +1,10 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Launch } from '@/types';
+import { PBEvent } from '@/types';
 import { Modal, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 interface EventDetailModalProps {
-  event: Launch | null;
+  event: PBEvent | null;
   visible: boolean;
   onClose: () => void;
 }
@@ -44,7 +44,7 @@ export default function EventDetailModal({ event, visible, onClose }: EventDetai
       <View style={styles.centeredView}>
         <ThemedView style={styles.modalView}>
           <ScrollView>
-            <ThemedText style={styles.modalTitle}>{event.name}</ThemedText>
+            <ThemedText style={styles.modalTitle}>{event.title}</ThemedText>
             {Object.entries(event).map(([key, value]) => renderDetail(key, value))}
           </ScrollView>
           <TouchableOpacity

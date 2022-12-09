@@ -1,23 +1,40 @@
-import EventDetailModal from '@/components/event-detail-modal';
+import CountdownTimer from '@/components/countdown-timer';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Launch } from '@/types';
+import { PBEvent } from '@/types';
+import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, ImageBackground, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Dimensions, FlatList, Image, ImageBackground, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-const API_URL = 'https://ll.thespacedevs.com/2.2.0/launch/?mode=list';
+const PB_URL = 'http://192.168.1.139:8080';
+const { height, width } = Dimensions.get('window');
 
-const LaunchCard = ({ item, onPress }: { item: Launch, onPress: () => void }) => {
+const LaunchCard = ({ item, onPress }: { item: PBEvent, onPress: () => void }) => {
+  const imageUrl = item.image
+    ? item.image.startsWith('http')
+      ? item.image
+      : `${PB_URL}/api/files/${item.collectionId}/${item.id}/${item.image}`
+    : undefined;
+  const isFuture = new Date(item.datetime).getTime() > new Date().getTime();
+  const provider = item.expand?.launch_service_provider;
+  const launchpad = item.expand?.launchpad;
+  const providerLogoUrl = provider?.logo_url;
+
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
       <ImageBackground
-        source={{ uri: item.image || undefined }}
+        source={{ uri: imageUrl }}
         style={styles.cardImage}
         resizeMode="cover"
       >
         <View style={styles.cardOverlay}>
-          <ThemedText style={styles.cardTitle}>{item.name}</ThemedText>
-          <ThemedText style={styles.cardSub}>{item.launch_service_provider?.name}</ThemedText>
+          {isFuture && <CountdownTimer targetDate={item.datetime} />}
+          <ThemedText style={styles.cardTitle}>{item.title}</ThemedText>
+          <View style={styles.providerContainer}>
+            {providerLogoUrl && <Image source={{ uri: providerLogoUrl }} style={styles.providerLogo} />}
+            <ThemedText style={styles.cardSub}>{provider?.name}</ThemedText>
+          </View>
+          <ThemedText style={styles.cardSub}>{launchpad?.name}</ThemedText>
         </View>
       </ImageBackground>
     </TouchableOpacity>
@@ -25,27 +42,62 @@ const LaunchCard = ({ item, onPress }: { item: Launch, onPress: () => void }) =>
 };
 
 export default function HomeScreen() {
-  const [launches, setLaunches] = useState<Launch[]>([]);
+  const [launches, setLaunches] = useState<PBEvent[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedLaunch, setSelectedLaunch] = useState<Launch | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    fetch(API_URL)
-      .then(r => r.json())
-      .then(data => {
-        setLaunches(data.results || []);
-        setLoading(false);
-      })
-      .catch(error => {
+    const fetchLaunches = async () => {
+      try {
+        setLoading(true);
+
+        const now = new Date();
+        const fourWeeksAgo = new Date(now.getTime() - 4 * 7 * 24 * 60 * 60 * 1000);
+        const oneWeekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+        const formatDateForPB = (date: Date) => date.toISOString().replace('T', ' ').substring(0, 19);
+
+        const dateFilter = `(datetime >= "${formatDateForPB(fourWeeksAgo)}" && datetime <= "${formatDateForPB(oneWeekFromNow)}")`;
+        const imageFilter = `(image != null && image != '')`;
+        const filter = `${dateFilter} && ${imageFilter}`;
+        const encodedFilter = encodeURIComponent(filter);
+
+        const res = await fetch(`${PB_URL}/api/collections/events/records?sort=-datetime&expand=launchpad,launch_service_provider&filter=${encodedFilter}`);
+        const data = await res.json();
+        const pbEvents: PBEvent[] = data.items || [];
+
+        const nowTimestamp = now.getTime();
+        pbEvents.sort((a, b) => {
+          const dateA = new Date(a.datetime).getTime();
+          const dateB = new Date(b.datetime).getTime();
+          
+          const aIsUpcoming = dateA >= nowTimestamp;
+          const bIsUpcoming = dateB >= nowTimestamp;
+
+          if (aIsUpcoming && !bIsUpcoming) return -1;
+          if (!aIsUpcoming && bIsUpcoming) return 1;
+
+          if (aIsUpcoming && bIsUpcoming) {
+            return dateA - dateB; // Sort upcoming ascending (soonest first)
+          }
+
+          // Both are past, sort descending (most recent first)
+          return dateB - dateA;
+        });
+
+        setLaunches(pbEvents);
+      } catch (error) {
         console.error("Failed to fetch launches:", error);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchLaunches();
   }, []);
 
-  const handleCardPress = (launch: Launch) => {
-    setSelectedLaunch(launch);
-    setModalVisible(true);
+  const handleCardPress = (launch: PBEvent) => {
+    router.push(`/event/${launch.id}`);
   };
 
   if (loading) {
@@ -58,21 +110,21 @@ export default function HomeScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedView style={styles.header}>
-        <ThemedText type="title" style={styles.pageTitle}>Feed</ThemedText>
-      </ThemedView>
-
       <FlatList
         data={launches}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => <LaunchCard item={item} onPress={() => handleCardPress(item)} />}
-        contentContainerStyle={styles.listContainer}
-      />
-
-      <EventDetailModal
-        event={selectedLaunch}
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
+        pagingEnabled
+        showsVerticalScrollIndicator={false}
+        snapToAlignment="start"
+        decelerationRate="fast"
+        snapToInterval={height}
+        ListEmptyComponent={
+          <View style={styles.centered}>
+            <ThemedText>No launches to display.</ThemedText>
+          </View>
+        }
+        contentContainerStyle={launches.length === 0 ? styles.centered : {}}
       />
     </ThemedView>
   );
@@ -81,54 +133,48 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#000',
   },
   centered: {
     justifyContent: 'center',
     alignItems: 'center',
   },
-  header: {
-    paddingTop: 60,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    backgroundColor: '#fff',
-  },
-  pageTitle: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#000',
-  },
-  listContainer: {
-    paddingHorizontal: 16,
-  },
   card: {
-    borderRadius: 24,
-    marginBottom: 20,
-    overflow: 'hidden',
-    backgroundColor: '#000',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 5 },
+    width: width,
+    height: height,
+    justifyContent: 'flex-end',
   },
   cardImage: {
     width: '100%',
-    height: 400,
+    height: '100%',
     justifyContent: 'flex-end',
   },
   cardOverlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.4)',
     padding: 20,
+    paddingBottom: 100, // Add padding to avoid tab bar
   },
   cardTitle: {
-    fontSize: 22,
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 4,
+    marginBottom: 8,
   },
   cardSub: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#eee',
   },
+  providerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  providerLogo: {
+    width: 24,
+    height: 24,
+    marginRight: 8,
+    resizeMode: 'contain',
+  },
 });
+
+

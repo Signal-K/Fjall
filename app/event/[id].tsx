@@ -1,5 +1,7 @@
 import { ThemedText } from '@/components/themed-text';
 import { PBEvent } from '@/types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo from '@react-native-community/netinfo';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, ScrollView, StyleSheet, View } from 'react-native';
@@ -10,16 +12,51 @@ export default function EventDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [event, setEvent] = useState<PBEvent | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isOnline, setIsOnline] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsOnline(state.isConnected ?? true);
+    });
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
     if (!id) return;
 
     const fetchEvent = async () => {
       try {
-        setLoading(true);
-        const res = await fetch(`${PB_URL}/api/collections/events/records/${id}?expand=launchpad,launch_service_provider`);
-        const data = await res.json();
-        setEvent(data);
+        const cacheKey = `event_${id}`;
+        // Load from cache first
+        const cachedData = await AsyncStorage.getItem(cacheKey);
+        if (cachedData) {
+          const { data, timestamp } = JSON.parse(cachedData);
+          const now = Date.now();
+          const cacheAge = now - timestamp;
+          const cacheExpiry = 24 * 60 * 60 * 1000; // 24 hours
+          if (cacheAge < cacheExpiry) {
+            setEvent(data);
+            setLoading(false);
+            return;
+          }
+        }
+
+        if (isOnline) {
+          setLoading(true);
+          const res = await fetch(`${PB_URL}/api/collections/events/records/${id}?expand=launchpad,launch_service_provider`);
+          const data = await res.json();
+          setEvent(data);
+
+          // Cache the data
+          const cacheData = {
+            data,
+            timestamp: Date.now()
+          };
+          await AsyncStorage.setItem(cacheKey, JSON.stringify(cacheData));
+        } else {
+          // If offline and no cache, set null
+          setEvent(null);
+        }
       } catch (error) {
         console.error("Failed to fetch event:", error);
       } finally {
@@ -28,7 +65,7 @@ export default function EventDetailScreen() {
     };
 
     fetchEvent();
-  }, [id]);
+  }, [id, isOnline]);
 
   if (loading) {
     return (
@@ -41,7 +78,7 @@ export default function EventDetailScreen() {
   if (!event) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <ThemedText>Event not found.</ThemedText>
+        <ThemedText>{isOnline ? 'Event not found.' : 'Event not cached. Please check your connection.'}</ThemedText>
       </View>
     );
   }

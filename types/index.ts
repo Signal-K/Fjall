@@ -19,5 +19,21 @@ export interface PBEvent {
   }
 }
 
-  
+// From PocketBase `payloads` collection
+export interface Payload {
+  id: string;
+  collectionId: string;
+  name: string;
+  description?: string;
+  image_url: string;
+  type?: string;
+  mass_kg?: number;
+  manufacturer?: string;
+  expand?: {
+    manufacturer?: {
+      name: string;
+    };
+  }
+}
+
   

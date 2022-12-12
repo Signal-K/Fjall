@@ -24,6 +24,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="payloads"
+        options={{
+          title: 'Payloads',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="cube.box.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="explore"
         options={{
           title: 'Explore',

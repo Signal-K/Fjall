@@ -107,7 +107,7 @@ export default function SearchScreen() {
         <TextInput
           style={styles.searchInput}
           placeholder="Search for launches..."
-          placeholderTextColor="rgba(0, 0, 0, 0.5)"
+          placeholderTextColor="#666"
           value={searchQuery}
           onChangeText={handleSearch}
           autoFocus
@@ -150,19 +150,21 @@ export default function SearchScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#000',
   },
   searchContainer: {
     padding: 20,
     paddingTop: 10,
   },
   searchInput: {
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    backgroundColor: '#1a1a1a',
     borderRadius: 25,
     paddingHorizontal: 20,
     paddingVertical: 12,
     fontSize: 16,
+    color: '#fff',
     borderWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.2)',
+    borderColor: '#333',
   },
   loadingContainer: {
     flex: 1,
@@ -177,6 +179,7 @@ const styles = StyleSheet.create({
   },
   placeholderText: {
     fontSize: 18,
+    color: '#666',
     textAlign: 'center',
   },
   emptyList: {
@@ -195,12 +198,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   resultOverlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     padding: 15,
   },
   resultTitle: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: '#fff',
     marginBottom: 6,
   },
   resultProviderContainer: {
@@ -216,9 +220,11 @@ const styles = StyleSheet.create({
   },
   resultSub: {
     fontSize: 14,
+    color: '#ccc',
   },
   resultDate: {
     fontSize: 12,
+    color: '#999',
     marginTop: 4,
   },
 });

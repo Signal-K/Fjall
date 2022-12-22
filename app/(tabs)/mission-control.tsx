@@ -77,13 +77,13 @@ const ActiveStationCard = ({ item }: { item: Station }) => {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'operational':
-        return '#4CAF50'; // Keep green for operational
+        return '#4CAF50';
       case 'maintenance':
-        return '#FF9800'; // Keep orange for maintenance
+        return '#FF9800';
       case 'decommissioned':
-        return '#F44336'; // Keep red for decommissioned
+        return '#F44336';
       default:
-        return '#9E9E9E'; // Keep gray for unknown
+        return '#9E9E9E';
     }
   };
 
@@ -241,6 +241,7 @@ export default function MissionControlScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#000',
   },
   centered: {
     justifyContent: 'center',
@@ -256,14 +257,16 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: '#fff',
     marginBottom: 15,
   },
   loadingText: {
     marginTop: 10,
     fontSize: 16,
+    color: '#666',
   },
   launchCard: {
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 12,
     marginBottom: 10,
     overflow: 'hidden',
@@ -283,17 +286,20 @@ const styles = StyleSheet.create({
   launchTitle: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#fff',
     marginBottom: 4,
   },
   launchDate: {
     fontSize: 12,
+    color: '#ccc',
     marginBottom: 2,
   },
   launchProvider: {
     fontSize: 12,
+    color: '#999',
   },
   dockingCard: {
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 12,
     padding: 15,
     marginBottom: 10,
@@ -307,20 +313,24 @@ const styles = StyleSheet.create({
   dockingTitle: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#fff',
     flex: 1,
   },
   dockingTime: {
     fontSize: 12,
+    color: '#ccc',
   },
   dockingDescription: {
     fontSize: 14,
+    color: '#ddd',
     marginBottom: 8,
   },
   dockingStation: {
     fontSize: 12,
+    color: '#999',
   },
   stationCard: {
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 12,
     padding: 15,
     marginBottom: 10,
@@ -334,6 +344,7 @@ const styles = StyleSheet.create({
   stationName: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#fff',
     flex: 1,
   },
   statusIndicator: {
@@ -343,14 +354,17 @@ const styles = StyleSheet.create({
   },
   stationLocation: {
     fontSize: 14,
+    color: '#ddd',
     marginBottom: 4,
   },
   stationStatus: {
     fontSize: 12,
+    color: '#999',
     marginBottom: 4,
   },
   stationCrew: {
     fontSize: 12,
+    color: '#999',
   },
   emptyState: {
     padding: 20,
@@ -358,6 +372,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
+    color: '#666',
     textAlign: 'center',
   },
 });

@@ -4,30 +4,18 @@ import { StyleSheet } from 'react-native';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { useThemeColor } from '@/hooks/use-theme-color';
 
 export default function TabLayout() {
-  const tabBarActiveTintColor = useThemeColor({}, 'tint');
-  const tabBarBackgroundColor = useThemeColor({}, 'background');
-  const tabBarBorderColor = useThemeColor({ light: 'rgba(0, 0, 0, 0.1)', dark: 'rgba(255, 255, 255, 0.1)' }, 'text');
-  const tabBarActiveBackgroundColor = useThemeColor({ light: 'rgba(0, 122, 255, 0.08)', dark: 'rgba(0, 122, 255, 0.12)' }, 'tint');
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor,
+        tabBarActiveTintColor: '#0056CC',
         headerShown: false,
         tabBarButton: HapticTab,
-        tabBarStyle: [
-          styles.tabBar,
-          {
-            backgroundColor: tabBarBackgroundColor,
-            borderColor: tabBarBorderColor,
-          },
-        ],
+        tabBarStyle: styles.tabBar,
         tabBarItemStyle: styles.tabBarItem,
         tabBarLabelStyle: styles.tabBarLabel,
-        tabBarActiveBackgroundColor: tabBarActiveBackgroundColor,
+        tabBarActiveBackgroundColor: 'rgba(0, 122, 255, 0.08)',
         tabBarInactiveBackgroundColor: 'transparent',
       }}>
       <Tabs.Screen
@@ -93,8 +81,10 @@ const styles = StyleSheet.create({
     left: 20,
     right: 20,
     height: 70,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     borderRadius: 35,
     borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.1)',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

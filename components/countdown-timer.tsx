@@ -83,9 +83,11 @@ const styles = StyleSheet.create({
   timeValue: {
     fontSize: 28,
     fontWeight: 'bold',
+    color: '#fff',
   },
   timeInterval: {
     fontSize: 12,
+    color: '#fff',
     textTransform: 'uppercase',
   },
   statusText: {

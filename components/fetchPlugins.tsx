@@ -13,7 +13,7 @@ const PluginDisplay = () => {
 
                 // Assuming the plugins array is always present in the config
                 const plugins = parsedConfig.plugins;
-
+ 
                 // Display config content
                 const pluginInfo = plugins
                     .map((plugin: { url: string; destination: string }) =>

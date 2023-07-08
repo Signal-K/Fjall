@@ -1,34 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import ApiSelection from '../components/selections/ApiSelection';
+import ApiReader from '../components/selections/ApiReader';
+import ApiSender from '../components/selections/ApiSender';
+import PluginList from '../components/selections/fullPluginList';
 
-type Plugin = string;
-
-const IndexPage: React.FC = () => {
-  const [rustPlugins, setRustPlugins] = useState<Plugin[]>([]);
-  const [rubyPlugins, setRubyPlugins] = useState<Plugin[]>([]);
-
-  useEffect(() => {
-    /* fetch('http://localhost:8080/api/plugins')
-		.then((response) => response.json())
-		.then((data) => setRustPlugins(data)); */
-
-	fetch('http://localhost:4567/api/plugins')
-		.then((response) => response.json())
-		.then((data) => setRustPlugins(data));
-  }, []);
+const HomePage = () => {
+  const [selectedApis, setSelectedApis] = useState<string[]>([]);
 
   return (
-    <div>
-      <h1>Available Plugins</h1>
-      <ul>
-        {/* {rustPlugins.map((plugin) => (
-          <li key={plugin}>{plugin}</li>
-        ))} */}
-		{rubyPlugins.map((plugin) => (
-          <li key={plugin}>{plugin}</li>
-        ))}
-      </ul>
+    <div className="container mx-auto my-8 max-w-md">
+      {/* <ApiSelection setSelectedApis={setSelectedApis} /> */}
+      {selectedApis.includes('rust') && <ApiReader apiName="rust" />}
+      {selectedApis.includes('ruby') && <ApiReader apiName="ruby" />}
+      {selectedApis.includes('flask') && <ApiReader apiName="flask" />}
+      {selectedApis.includes('express') && <ApiReader apiName="express" />}
+      {selectedApis.includes('rust') && <ApiSender apiName="rust" />}
+      {selectedApis.includes('ruby') && <ApiSender apiName="ruby" />}
+      {selectedApis.includes('flask') && <ApiSender apiName="flask" />}
+      {selectedApis.includes('express') && <ApiSender apiName="express" />}
+      <PluginList />
     </div>
   );
 };
 
-export default IndexPage;
+export default HomePage;

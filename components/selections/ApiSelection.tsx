@@ -46,3 +46,5 @@ const ApiSelection = () => {
         </div>
     )
 }
+
+export default ApiSelection;

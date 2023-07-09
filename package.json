@@ -7,15 +7,24 @@
     "type-check": "tsc"
   },
   "dependencies": {
+    "@apideck/components": "^0.12.9",
     "@headlessui/react": "^1.7.16",
     "@iarna/toml": "^2.2.5",
+    "@tabler/icons-react": "^2.30.0",
     "@thirdweb-dev/react": "^2.2.2",
     "@thirdweb-dev/sdk": "^2.1.6",
     "axios": "^1.4.0",
     "ethers": "^5.6.4",
+    "fs": "^0.0.1-security",
+    "httpx": "^2.2.7",
     "next": "latest",
+    "node-fetch": "^3.3.2",
+    "openai": "^4.0.0",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "react-icons": "^4.10.1",
+    "react-pdf": "^7.3.3",
+    "react-resizable-panels": "^0.0.55"
   },
   "devDependencies": {
     "@types/node": "^12.12.21",

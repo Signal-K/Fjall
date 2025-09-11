@@ -1,98 +1,134 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
+import EventDetailModal from '@/components/event-detail-modal';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { Launch } from '@/types';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, ImageBackground, StyleSheet, TouchableOpacity, View } from 'react-native';
+
+const API_URL = 'https://ll.thespacedevs.com/2.2.0/launch/?mode=list';
+
+const LaunchCard = ({ item, onPress }: { item: Launch, onPress: () => void }) => {
+  return (
+    <TouchableOpacity style={styles.card} onPress={onPress}>
+      <ImageBackground
+        source={{ uri: item.image || undefined }}
+        style={styles.cardImage}
+        resizeMode="cover"
+      >
+        <View style={styles.cardOverlay}>
+          <ThemedText style={styles.cardTitle}>{item.name}</ThemedText>
+          <ThemedText style={styles.cardSub}>{item.launch_service_provider?.name}</ThemedText>
+        </View>
+      </ImageBackground>
+    </TouchableOpacity>
+  );
+};
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const [launches, setLaunches] = useState<Launch[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedLaunch, setSelectedLaunch] = useState<Launch | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
+  useEffect(() => {
+    fetch(API_URL)
+      .then(r => r.json())
+      .then(data => {
+        setLaunches(data.results || []);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error("Failed to fetch launches:", error);
+        setLoading(false);
+      });
+  }, []);
+
+  const handleCardPress = (launch: Launch) => {
+    setSelectedLaunch(launch);
+    setModalVisible(true);
+  };
+
+  if (loading) {
+    return (
+      <ThemedView style={[styles.container, styles.centered]}>
+        <ActivityIndicator size="large" />
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
+    );
+  }
+
+  return (
+    <ThemedView style={styles.container}>
+      <ThemedView style={styles.header}>
+        <ThemedText type="title" style={styles.pageTitle}>Feed</ThemedText>
       </ThemedView>
-    </ParallaxScrollView>
+
+      <FlatList
+        data={launches}
+        keyExtractor={item => item.id}
+        renderItem={({ item }) => <LaunchCard item={item} onPress={() => handleCardPress(item)} />}
+        contentContainerStyle={styles.listContainer}
+      />
+
+      <EventDetailModal
+        event={selectedLaunch}
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+      />
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  centered: {
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  header: {
+    paddingTop: 60,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    backgroundColor: '#fff',
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  pageTitle: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  listContainer: {
+    paddingHorizontal: 16,
+  },
+  card: {
+    borderRadius: 24,
+    marginBottom: 20,
+    overflow: 'hidden',
+    backgroundColor: '#000',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+  },
+  cardImage: {
+    width: '100%',
+    height: 400,
+    justifyContent: 'flex-end',
+  },
+  cardOverlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    padding: 20,
+  },
+  cardTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 4,
+  },
+  cardSub: {
+    fontSize: 16,
+    color: '#eee',
   },
 });

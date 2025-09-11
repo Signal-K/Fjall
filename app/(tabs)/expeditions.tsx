@@ -4,7 +4,7 @@ import { ThemedView } from '@/components/themed-view';
 import { useEffect, useState } from 'react';
 import { Dimensions, FlatList, Image, StyleSheet, Text, View } from 'react-native';
 
-const PB_URL = 'http://localhost:8080';
+const PB_URL = 'http://192.168.1.139:8080';
 
 interface Expedition {
   id: string;

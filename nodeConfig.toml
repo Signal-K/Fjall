@@ -1,7 +1,0 @@
-[[plugins]]
-url = "https://github.com/signal-k/starsailors"
-destination = "plugins/starsailors"
-
-[[plugins]]
-url = "https://github.com/example/repo"
-destination = "plugins/example"

@@ -3,9 +3,9 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { PBEvent } from '@/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import NetInfo from '@react-native-community/netinfo';
+import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Dimensions, FlatList, Image, ImageBackground, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 const PB_URL = 'http://192.168.1.139:8080';
@@ -17,26 +17,37 @@ const LaunchCard = ({ item, onPress }: { item: PBEvent, onPress: () => void }) =
       ? item.image
       : `${PB_URL}/api/files/${item.collectionId}/${item.id}/${item.image}`
     : undefined;
-  const isFuture = new Date(item.datetime).getTime() > new Date().getTime();
   const provider = item.expand?.launch_service_provider;
   const launchpad = item.expand?.launchpad;
   const providerLogoUrl = provider?.logo_url;
 
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress}>
+    <TouchableOpacity
+      style={styles.card}
+      onPress={onPress}
+      activeOpacity={0.9}
+    >
       <ImageBackground
         source={{ uri: imageUrl }}
         style={styles.cardImage}
         resizeMode="cover"
+        blurRadius={0.5}
       >
         <View style={styles.cardOverlay}>
-          {isFuture && <CountdownTimer targetDate={item.datetime} />}
-          <ThemedText style={styles.cardTitle}>{item.title}</ThemedText>
-          <View style={styles.providerContainer}>
-            {providerLogoUrl && <Image source={{ uri: providerLogoUrl }} style={styles.providerLogo} />}
-            <ThemedText style={styles.cardSub}>{provider?.name}</ThemedText>
+          <View style={styles.contentContainer}>
+            <CountdownTimer targetDate={item.datetime} />
+            <ThemedText style={styles.cardTitle} lightColor="#fff" darkColor="#fff">{item.title}</ThemedText>
+            <View style={styles.providerContainer}>
+              {providerLogoUrl && (
+                <Image
+                  source={{ uri: providerLogoUrl }}
+                  style={styles.providerLogo}
+                />
+              )}
+              <ThemedText style={styles.cardSub} lightColor="#eee" darkColor="#eee">{provider?.name}</ThemedText>
+            </View>
+            <ThemedText style={styles.cardSub} lightColor="#eee" darkColor="#eee">{launchpad?.name}</ThemedText>
           </View>
-          <ThemedText style={styles.cardSub}>{launchpad?.name}</ThemedText>
         </View>
       </ImageBackground>
     </TouchableOpacity>
@@ -47,14 +58,23 @@ export default function HomeScreen() {
   const [launches, setLaunches] = useState<PBEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(true);
+  const [isFocused, setIsFocused] = useState(false);
   const router = useRouter();
+  const flatListRef = useRef<FlatList>(null);
 
-  useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener(state => {
-      setIsOnline(state.isConnected ?? true);
-    });
-    return unsubscribe;
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      if (isFocused) {
+        // If already focused, user tapped home tab again - scroll to top with smooth animation
+        flatListRef.current?.scrollToOffset({
+          offset: 0,
+          animated: true,
+        });
+      } else {
+        setIsFocused(true);
+      }
+    }, [isFocused])
+  );
 
   useEffect(() => {
     const fetchLaunches = async () => {
@@ -144,15 +164,43 @@ export default function HomeScreen() {
 
   return (
     <ThemedView style={styles.container}>
+      <View style={styles.header}>
+        <View style={styles.headerRight}>
+          <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/search')}>
+            <View style={styles.iconCircle}>
+              <ThemedText style={styles.iconText}>🔍</ThemedText>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/settings')}>
+            <View style={styles.iconCircle}>
+              <ThemedText style={styles.iconText}>⚙️</ThemedText>
+            </View>
+          </TouchableOpacity>
+        </View>
+      </View>
       <FlatList
+        ref={flatListRef}
         data={launches}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <LaunchCard item={item} onPress={() => handleCardPress(item)} />}
         pagingEnabled
         showsVerticalScrollIndicator={false}
         snapToAlignment="start"
-        decelerationRate="fast"
         snapToInterval={height}
+        decelerationRate="normal"
+        bounces={false}
+        scrollEventThrottle={16}
+        removeClippedSubviews={true}
+        initialNumToRender={3}
+        maxToRenderPerBatch={2}
+        windowSize={5}
+        getItemLayout={(data, index) => ({
+          length: height,
+          offset: height * index,
+          index,
+        })}
+        contentInsetAdjustmentBehavior="never"
+        automaticallyAdjustContentInsets={false}
         ListEmptyComponent={
           <View style={styles.centered}>
             <ThemedText>{isOnline ? 'No launches to display.' : 'No cached launches available. Please check your connection.'}</ThemedText>
@@ -173,6 +221,38 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  header: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    zIndex: 10,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  iconButton: {
+    padding: 8,
+  },
+  iconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  iconText: {
+    fontSize: 20,
+  },
   card: {
     width: width,
     height: height,
@@ -187,6 +267,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.4)',
     padding: 20,
     paddingBottom: 100, // Add padding to avoid tab bar
+    justifyContent: 'flex-end',
+  },
+  contentContainer: {
+    opacity: 1,
+    transform: [{ translateY: 0 }],
   },
   cardTitle: {
     fontSize: 28,

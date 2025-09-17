@@ -1,3 +1,4 @@
+import { ThemeProvider as CustomThemeProvider } from '@/hooks/use-theme';
 import { ClerkProvider } from '@clerk/clerk-expo';
 import { tokenCache } from '@clerk/clerk-expo/token-cache';
 import {
@@ -7,7 +8,6 @@ import {
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
-import { ThemeProvider as CustomThemeProvider } from '@/hooks/use-theme';
 
 export const unstable_settings = {
   anchor: "(tabs)",

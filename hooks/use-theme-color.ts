@@ -2,8 +2,8 @@
  * Color hook that returns colors from the theme.
  */
 
-import { useTheme } from '@/hooks/use-theme';
 import { Colors } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export function useThemeColor(
   props: { light?: string; dark?: string },

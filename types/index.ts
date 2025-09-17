@@ -8,15 +8,40 @@ export interface PBEvent {
   source_url: string;
   description?: string;
   image: string; // The filename for the launch image
+  spacedevs_id?: string;
+  mission_id?: string;
+  pad_id?: string;
   expand?: {
-    launch_service_provider?: {
+    spacedevs_id?: {
       name: string;
       logo_url?: string;
+      type?: string;
+      country_code?: string;
     };
     launchpad?: {
       name: string;
     };
   }
+}
+
+// From PocketBase `missions` collection
+export interface Mission {
+  id: string;
+  collectionId: string;
+  name: string;
+  description?: string;
+  orbit_type?: string;
+}
+
+// From PocketBase `pads` collection
+export interface Pad {
+  id: string;
+  collectionId: string;
+  name: string;
+  latitude?: number;
+  longitude?: number;
+  map_url?: string;
+  country_code?: string;
 }
 
 // From PocketBase `payloads` collection

@@ -2,8 +2,8 @@ import { ThemeProvider as CustomThemeProvider } from '@/hooks/use-theme';
 import { ClerkProvider } from '@clerk/clerk-expo';
 import { tokenCache } from '@clerk/clerk-expo/token-cache';
 import {
-  DefaultTheme,
-  ThemeProvider,
+    DefaultTheme,
+    ThemeProvider,
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";

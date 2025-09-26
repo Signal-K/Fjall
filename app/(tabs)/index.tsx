@@ -56,6 +56,7 @@ const LaunchCard = ({ item, onPress }: { item: PBEvent, onPress: () => void }) =
 
 export default function HomeScreen() {
   const [launches, setLaunches] = useState<PBEvent[]>([]);
+  const launchesRef = useRef<PBEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [isOnline] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
@@ -129,20 +130,30 @@ export default function HomeScreen() {
             return dateB - dateA;
           });
 
-          setLaunches(pbEvents);
+          // Only update state if the fetched data differs from current to avoid
+          // resetting the FlatList position while the user is scrolling.
+          const newIds = pbEvents.map((p) => p.id);
+          const currentIds = launchesRef.current.map((l) => l.id);
+          const sameLength = currentIds.length === newIds.length;
+          const isSame = sameLength && currentIds.every((id, idx) => id === newIds[idx]);
 
-          // Cache the data
+          if (!isSame) {
+            setLaunches(pbEvents);
+            launchesRef.current = pbEvents;
+          }
+
+          // Cache the data regardless so we have an up-to-date cache timestamp.
           const cacheData = {
             data: pbEvents,
-            timestamp: Date.now()
+            timestamp: Date.now(),
           };
           await AsyncStorage.setItem('launches_cache', JSON.stringify(cacheData));
         } else {
           // If offline, do nothing, use cached data if available
         }
-      } catch (error) {
-        console.error("Failed to fetch launches:", error);
-      } finally {
+        } catch (error) {
+          console.error("Failed to fetch launches:", error);
+        } finally {
         setLoading(false);
       }
     };
@@ -183,17 +194,25 @@ export default function HomeScreen() {
         data={launches}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <LaunchCard item={item} onPress={() => handleCardPress(item)} />}
-        pagingEnabled
+        // Use snapping to a fixed interval (screen height) but disable paging
+        // so the scroll feels natural and less jumpy.
+        pagingEnabled={false}
         showsVerticalScrollIndicator={false}
         snapToAlignment="start"
         snapToInterval={height}
-        decelerationRate="normal"
+        // Make deceleration quicker for snappier but smoother feel
+        decelerationRate="fast"
+        // Prevent momentum from causing multiple snaps/skips
+        disableIntervalMomentum={true}
         bounces={false}
         scrollEventThrottle={16}
-        removeClippedSubviews={true}
-        initialNumToRender={3}
-        maxToRenderPerBatch={2}
-        windowSize={5}
+        // Keeping clipped subviews off reduces stuttering when animating large
+        // images that cover the full screen.
+        removeClippedSubviews={false}
+        // Render a bit more ahead of time to reduce pop-in during fast scrolls
+        initialNumToRender={2}
+        maxToRenderPerBatch={5}
+        windowSize={9}
         getItemLayout={(data, index) => ({
           length: height,
           offset: height * index,
@@ -201,12 +220,22 @@ export default function HomeScreen() {
         })}
         contentInsetAdjustmentBehavior="never"
         automaticallyAdjustContentInsets={false}
+        // If the list is empty, center the message vertically
         ListEmptyComponent={
           <View style={styles.centered}>
             <ThemedText>{isOnline ? 'No launches to display.' : 'No cached launches available. Please check your connection.'}</ThemedText>
           </View>
         }
         contentContainerStyle={launches.length === 0 ? styles.centered : {}}
+        // Fallback if snapping fails to avoid jumping back to start
+        onScrollToIndexFailed={() => { /* no-op */ }}
+        onMomentumScrollEnd={(ev) => {
+          // Ensure the list snaps to the nearest item to avoid partially
+          // visible cards and skipping.
+          const offsetY = ev.nativeEvent.contentOffset?.y ?? 0;
+          const index = Math.round(offsetY / height);
+          flatListRef.current?.scrollToIndex({ index, animated: true });
+        }}
       />
     </ThemedView>
   );

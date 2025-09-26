@@ -11,6 +11,9 @@ export interface PBEvent {
   spacedevs_id?: string;
   mission_id?: string;
   pad_id?: string;
+  status_abbrev?: string;
+  status_description?: string;
+  updates?: { id?: string; title?: string; description?: string; created_at?: string }[];
   expand?: {
     launch_service_provider?: {
       name: string;

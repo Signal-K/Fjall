@@ -14,7 +14,7 @@ const SearchResultCard = ({ item, onPress }: { item: PBEvent, onPress: () => voi
       ? item.image
       : `${PB_URL}/api/files/${item.collectionId}/${item.id}/${item.image}`
     : undefined;
-  const provider = item.expand?.spacedevs_id;
+  const provider = (item.expand as any)?.spacedevs_id;
   const launchpad = item.expand?.launchpad;
   const providerLogoUrl = provider?.logo_url;
 
@@ -71,7 +71,7 @@ export default function SearchScreen() {
       const filteredResults = allEvents.filter(event => {
         const titleMatch = event.title?.toLowerCase().includes(query.toLowerCase());
         const descMatch = event.description?.toLowerCase().includes(query.toLowerCase());
-        const providerMatch = event.expand?.spacedevs_id?.name?.toLowerCase().includes(query.toLowerCase());
+  const providerMatch = (event.expand as any)?.spacedevs_id?.name?.toLowerCase().includes(query.toLowerCase());
 
         return titleMatch || descMatch || providerMatch;
       });

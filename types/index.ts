@@ -12,7 +12,7 @@ export interface PBEvent {
   mission_id?: string;
   pad_id?: string;
   expand?: {
-    spacedevs_id?: {
+    launch_service_provider?: {
       name: string;
       logo_url?: string;
       type?: string;
@@ -61,4 +61,3 @@ export interface Payload {
   }
 }
 
-  

@@ -6,7 +6,7 @@ import { Stack, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, ImageBackground, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
-const PB_URL = 'http://192.168.1.139:8080';
+import { PB_URL } from '@/constants/pocketbase';
 
 const SearchResultCard = ({ item, onPress }: { item: PBEvent, onPress: () => void }) => {
   const imageUrl = item.image
@@ -14,7 +14,7 @@ const SearchResultCard = ({ item, onPress }: { item: PBEvent, onPress: () => voi
       ? item.image
       : `${PB_URL}/api/files/${item.collectionId}/${item.id}/${item.image}`
     : undefined;
-  const provider = item.expand?.launch_service_provider;
+  const provider = item.expand?.spacedevs_id;
   const launchpad = item.expand?.launchpad;
   const providerLogoUrl = provider?.logo_url;
 
@@ -71,7 +71,7 @@ export default function SearchScreen() {
       const filteredResults = allEvents.filter(event => {
         const titleMatch = event.title?.toLowerCase().includes(query.toLowerCase());
         const descMatch = event.description?.toLowerCase().includes(query.toLowerCase());
-        const providerMatch = event.expand?.launch_service_provider?.name?.toLowerCase().includes(query.toLowerCase());
+        const providerMatch = event.expand?.spacedevs_id?.name?.toLowerCase().includes(query.toLowerCase());
 
         return titleMatch || descMatch || providerMatch;
       });

@@ -6,7 +6,7 @@ import NetInfo from '@react-native-community/netinfo';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Dimensions, FlatList, ImageBackground, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-const PB_URL = 'http://192.168.1.139:8080';
+const PB_URL = 'http://http://172.20.0.2:8080';
 const { height, width } = Dimensions.get('window');
 
 const PayloadCard = ({ item, onPress }: { item: Payload, onPress: () => void }) => {

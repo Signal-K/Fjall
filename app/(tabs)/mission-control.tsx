@@ -6,7 +6,7 @@ import { Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-const PB_URL = 'http://192.168.1.139:8080';
+const PB_URL = 'http://http://172.20.0.2:8080';
 
 interface Station {
   id: string;

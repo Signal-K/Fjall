@@ -8,7 +8,7 @@ import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Dimensions, FlatList, Image, ImageBackground, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-const PB_URL = 'http://192.168.1.139:8080';
+import { PB_URL } from '@/constants/pocketbase';
 const { height, width } = Dimensions.get('window');
 
 const LaunchCard = ({ item, onPress }: { item: PBEvent, onPress: () => void }) => {
@@ -57,7 +57,7 @@ const LaunchCard = ({ item, onPress }: { item: PBEvent, onPress: () => void }) =
 export default function HomeScreen() {
   const [launches, setLaunches] = useState<PBEvent[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isOnline, setIsOnline] = useState(true);
+  const [isOnline] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
   const router = useRouter();
   const flatListRef = useRef<FlatList>(null);

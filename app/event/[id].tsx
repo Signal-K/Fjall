@@ -5,6 +5,7 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, Platform, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
+import { PB_URL } from '@/constants/pocketbase';
 import { Ionicons } from '@expo/vector-icons';
 
 // Platform-specific map component
@@ -43,7 +44,7 @@ const PlatformMap = ({ latitude, longitude, name }: { latitude: number; longitud
   }
 
   return <MapComponent latitude={latitude} longitude={longitude} name={name} />;
-};const PB_URL = 'http://192.168.1.139:8080';
+};
 
 export default function EventDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
